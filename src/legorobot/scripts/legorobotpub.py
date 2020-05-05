@@ -27,6 +27,12 @@ def on_press(key):
 
     if (k == 'w'):
         current_msg = "forward"
+    elif (k == 's'):
+        current_msg = "backward"
+    elif (k == 'a'):
+        current_msg = "left"    
+    elif (k == 'd'):
+        current_msg = "right"    
     else:           
         current_msg = "stop"
 
@@ -39,27 +45,6 @@ def on_release(key):
         print("quit on PAUSE")
         return False
 
-# def simplePublisher():
-#     simple_publisher = rospy.Publisher('ev3/active_mode', String, queue_size = 10)
-#     rospy.init_node('node_1', anonymous=False)
-#     rate = rospy.Rate(10)
-
-#     #topic1_content = "spin"
-
-#     while not rospy.is_shutdown():
-#         content = "stop"
-#         # key = getKey()
-#         # print (key)
-#         # if key == "w":
-#         #     content = "forward"
-#         # elif key == "s":
-#         #     content = "backward"
-#         # elif key == "x":
-#         #     content = "stop"
-#         #     simple_publisher.publish(content)
-#         #     exit()    
-
-#         rate.sleep()
 
 if __name__ == "__main__":
     # setup ros publisher

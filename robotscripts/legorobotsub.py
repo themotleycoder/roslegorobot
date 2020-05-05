@@ -27,6 +27,9 @@ import datetime
 from random import uniform
 
 class EV3DEV(object):
+
+    direction = "stop"
+
     def __init__(self):
         self.exit = True
         self.callback_exit = True
@@ -55,7 +58,11 @@ class EV3DEV(object):
             elif data.data == 'forward':
                 self.forward()
             elif data.data == 'backward':
-                self.backward()    
+                self.backward()  
+            elif data.data == 'left':
+                self.left()
+            elif data.data == 'right':
+                self.right()  
         except Exception as e:
           rospy.logdebug(e)
 
@@ -85,17 +92,19 @@ class EV3DEV(object):
 
     def forward(self):
         speed = 100
-        t = 1
-        self.tank_drive.on_for_seconds(SpeedPercent(speed), SpeedPercent(speed), t)
-        # self.tank_drive.on_for_seconds(SpeedPercent(speed), SpeedPercent(-speed), t)
-        self.halt()
+        self.tank_drive.on(SpeedPercent(speed), SpeedPercent(speed))
 
     def backward(self):
         speed = 100
-        t = 1
-        #self.tank_drive.on_for_seconds(SpeedPercent(-speed), SpeedPercent(speed), t)
-        self.tank_drive.on_for_seconds(SpeedPercent(-speed), SpeedPercent(-speed), t)
-        self.halt()    
+        self.tank_drive.on(SpeedPercent(-speed), SpeedPercent(-speed))
+
+    def left(self):
+        speed = 50
+        self.tank_drive.on(SpeedPercent(-speed), SpeedPercent(speed))  
+
+    def right(self):
+        speed = 50
+        self.tank_drive.on(SpeedPercent(speed), SpeedPercent(-speed))           
 
     def halt(self):
         self.tank_drive.on(SpeedPercent(0), SpeedPercent(0))
