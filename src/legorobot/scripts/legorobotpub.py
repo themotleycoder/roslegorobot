@@ -19,6 +19,7 @@ def getKey():
 
 # define key press event callback
 def on_press(key):
+    global pub
     global current_msg
     try:
         k = key.char  # single-char keys
@@ -33,13 +34,17 @@ def on_press(key):
         current_msg = "left"    
     elif (k == 'd'):
         current_msg = "right"    
-    else:           
-        current_msg = "stop"
+    # else:           
+    #     current_msg = "stop"
+
+    pub.publish(current_msg)    
 
 # define key release event callback
 def on_release(key):
+    global pub
     global current_msg
     current_msg = "stop"
+    pub.publish(current_msg)
     # stop on PAUSE
     if key == Key.pause:
         print("quit on PAUSE")
@@ -60,5 +65,5 @@ if __name__ == "__main__":
     # endlessly react on keyboard events and send appropriate messages
     while listener.running and not rospy.is_shutdown():
         rospy.loginfo(current_msg)
-        pub.publish(current_msg)
+        # pub.publish(current_msg)
         rate.sleep()

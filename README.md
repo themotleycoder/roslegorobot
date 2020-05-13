@@ -45,9 +45,50 @@ ROS eneabled Lego robot using Python 2
   
     `scp src/legorobot/robotscripts/* robot@IPADDRESS:`
 
-##RPI
+## RPI
 * apt-get install git
-* 
+
+### Docker
+Install the following prerequisites
+
+    sudo apt-get install apt-transport-https ca-certificates software-properties-common -y
+
+Download and install Docker
+
+    curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+
+Give the ‘pi’ user the ability to run Docker
+
+    sudo usermod -aG docker pi
+
+Import Docker GPG key
+
+    sudo curl https://download.docker.com/linux/raspbian/gpg
+
+Setup the Docker Repo
+
+    nano vim /etc/apt/sources.list
+
+Add the following line and save:
+
+    deb https://download.docker.com/linux/raspbian/ stretch stable
+
+Patch and update your PI
+
+    sudo apt-get update
+    sudo apt-get upgrade
+
+Start the Docker service
+
+    systemctl start docker.service
+
+To verify that Docker is installed and running
+
+    docker info
+
+## RPi Docker Specifics
+    docker run -p 11311:11311 -P --expose 11311 -it [container name]
+
 
 ## Useful Commands:
 * rosdep update

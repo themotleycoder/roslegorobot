@@ -5,6 +5,7 @@ print('Loading EV3 dependencies...')
 from ev3dev2.motor import OUTPUT_A, OUTPUT_B, SpeedPercent, MoveSteering, MoveDifferential, MoveTank
 from ev3dev2.wheel import EV3Tire
 from ev3dev2.button import Button
+from ev3dev2.sensor.lego import UltrasonicSensor
 from ev3dev2.sensor.lego import InfraredSensor, TouchSensor, ColorSensor
 from ev3dev2.sound import Sound
 from ev3dev2.power import PowerSupply
@@ -36,7 +37,7 @@ class EV3DEV(object):
         # Connect sensors and buttons.
         self.btn = Button()
         #self.ir = InfraredSensor()
-        #self.ts = TouchSensor()
+        self.ts = TouchSensor()
         self.power = PowerSupply()
         self.tank_drive = MoveTank(OUTPUT_A, OUTPUT_B)
         print('EV3 Node init starting')
@@ -44,13 +45,14 @@ class EV3DEV(object):
         print('EV3 Node init complete')
         rospy.Subscriber('ev3/active_mode', String, self.active_mode_callback, queue_size=1)
         self.power_init()
+        self.touch_init()
         print('READY!')
         rospy.spin()
 
     def active_mode_callback(self, data):
         print(data)
         try:
-            rospy.logdebug('Active mode: {}'.format(data))
+            # rospy.logdebug('Active mode: {}'.format(data))
             self.active_mode = data.data
             self.check_thread()
             if data.data == 'stop':
@@ -83,6 +85,17 @@ class EV3DEV(object):
                 rospy.logdebug(e)
                 break
 
+    def touch_init(self):
+        thread = threading.Thread(target=self.touch_thread, args=("task",))
+        thread.daemon = True
+        thread.start()
+        return thread
+
+    def touch_thread(self, arg):
+        while True:
+            if (self.ts.is_pressed==1):
+                self.drive_for_time(-100, 1)
+
     def check_thread(self):
         while not self.exit:
             sleep(0.5)
@@ -98,6 +111,9 @@ class EV3DEV(object):
         speed = 100
         self.tank_drive.on(SpeedPercent(-speed), SpeedPercent(-speed))
 
+    def drive_for_time(self, speed, time):
+        self.tank_drive.on_for_seconds(SpeedPercent(speed), SpeedPercent(speed), time)
+
     def left(self):
         speed = 50
         self.tank_drive.on(SpeedPercent(-speed), SpeedPercent(speed))  
@@ -108,21 +124,7 @@ class EV3DEV(object):
 
     def halt(self):
         self.tank_drive.on(SpeedPercent(0), SpeedPercent(0))
-    
-    # def stringListener():
 
-    #     # In ROS, nodes are uniquely named. If two nodes with the same
-    #     # name are launched, the previous one is kicked off. The
-    #     # anonymous=True flag means that rospy will choose a unique
-    #     # name for our 'stringListener' node so that multiple listeners can
-    #     # run simultaneously.
-    #     rospy.init_node('node_2', anonymous=False)
-
-    #     rospy.Subscriber('ev3/active_mode', String, stringListenerCallback)
-
-    #     # spin() simply keeps python from exiting until this node is stopped
-    #     rospy.spin()
 
 if __name__ == '__main__':
     e = EV3DEV()
-    # e.stringListener()
