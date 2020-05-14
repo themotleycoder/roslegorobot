@@ -87,10 +87,11 @@ To verify that Docker is installed and running
     docker info
 
 ## RPi Docker Specifics
-    docker run -p 11311:11311 -P --expose 11311 -it [container name]
+    docker run --network host --name legorobot -e ROS_IP=172.17.0.1 -e ROS_MASTER_URI=http://172.17.0.1:11311 -it legorobot
 
 
 ## Useful Commands:
 * rosdep update
 * source devel/setup.bash
 * catkin_make install
+* docker exec -it legorobot sh -c bash
